@@ -1,0 +1,32 @@
+Running ./lake with (128 x 128) grid, until 1.000000, with 1 threads
+CPU took 0.312242 seconds
+GPU computation: 111.595139 msec
+GPU took 0.409433 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 2 threads
+CPU took 0.311474 seconds
+GPU computation: 31.679104 msec
+GPU took 0.353430 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 4 threads
+CPU took 0.312053 seconds
+GPU computation: 12.261024 msec
+GPU took 0.327252 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.311553 seconds
+GPU computation: 7.946624 msec
+GPU took 0.319328 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 16 threads
+CPU took 0.311648 seconds
+GPU computation: 7.554496 msec
+GPU took 0.306852 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 32 threads
+CPU took 0.312444 seconds
+GPU computation: 2.865280 msec
+GPU took 0.320189 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 64 threads
+CPU took 0.307379 seconds
+GPU computation: 2.348384 msec
+GPU took 0.310208 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 128 threads
+CPU took 0.307193 seconds
+GPU computation: 2.428544 msec
+GPU took 0.377726 seconds

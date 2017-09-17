@@ -1,0 +1,49 @@
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 16 5 1.0 8
+Running ./lake with (16 x 16) grid, until 1.000000, with 8 threads
+CPU took 0.001008 seconds
+GPU computation: 38.415073 msec
+GPU took 1.389314 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 32 5 1.0 8
+Running ./lake with (32 x 32) grid, until 1.000000, with 8 threads
+CPU took 0.006653 seconds
+GPU computation: 5.793888 msec
+GPU took 1.172577 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 64 5 1.0 8
+Running ./lake with (64 x 64) grid, until 1.000000, with 8 threads
+CPU took 0.036295 seconds
+GPU computation: 11.546752 msec
+GPU took 1.178547 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 128 5 1.0 8
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.310709 seconds
+GPU computation: 32.802784 msec
+GPU took 1.199455 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 256 5 1.0 8
+Running ./lake with (256 x 256) grid, until 1.000000, with 8 threads
+CPU took 2.592352 seconds
+GPU computation: 171.182983 msec
+GPU took 1.334674 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 512 5 1.0 8
+Running ./lake with (512 x 512) grid, until 1.000000, with 8 threads
+CPU took 21.272439 seconds
+GPU computation: 1161.687622 msec
+GPU took 2.328066 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 8
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 8 threads
+CPU took 201.075411 seconds
+GPU computation: 8103.979980 msec
+GPU took 9.267408 seconds

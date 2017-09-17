@@ -1,0 +1,77 @@
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 1
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 1 threads
+CPU took 187.977634 seconds
+GPU computation: 7590.481445 msec
+GPU took 8.751384 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 2
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 2 threads
+CPU took 196.856156 seconds
+GPU computation: 7616.914062 msec
+GPU took 8.777434 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 4
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 4 threads
+CPU took 202.982238 seconds
+GPU computation: 8956.967773 msec
+GPU took 10.120748 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 8
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 8 threads
+CPU took 193.689548 seconds
+GPU computation: 8118.055664 msec
+GPU took 9.280954 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 16
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 16 threads
+CPU took 195.820564 seconds
+GPU computation: 8039.541016 msec
+GPU took 9.203196 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 32
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 32 threads
+CPU took 186.587900 seconds
+GPU computation: 8168.098145 msec
+GPU took 9.331323 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 64
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 64 threads
+CPU took 189.559482 seconds
+GPU computation: 7564.207520 msec
+GPU took 8.727920 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 128
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 128 threads
+CPU took 189.428067 seconds
+GPU computation: 7647.123047 msec
+GPU took 8.816821 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 256
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 256 threads
+CPU took 185.302636 seconds
+GPU computation: 7547.426758 msec
+GPU took 8.715190 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 512
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 512 threads
+CPU took 205.567442 seconds
+GPU computation: 7601.280762 msec
+GPU took 8.764876 seconds
+[prun] Master compute host = c8
+[prun] Resource manager = slurm
+[prun] Launch cmd = mpiexec.hydra -bootstrap slurm ./lake 1024 5 1.0 1024
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 1024 threads
+CPU took 178.940745 seconds
+GPU computation: 7642.742188 msec
+GPU took 8.812801 seconds
