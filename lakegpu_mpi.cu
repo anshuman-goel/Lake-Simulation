@@ -94,7 +94,7 @@ inline void __cudaCheckError( const char *file, const int line ){
 
 //updates the grid state from time t to time t+dt
 __global__ static void evolve(double *un, double *uc, double *uo,
-                              double *pebbles, int *n, double *h, double *dt, 
+                              double *pebbles, int *n, double *h, double *dt,
                               double *t, int *n_blocks, int *n_threads, int *rank){
 
   int i, j;
@@ -125,9 +125,9 @@ __global__ static void evolve(double *un, double *uc, double *uo,
   int idx = i * *n + j;
 
   //values at lake edge points are set to zero
-  if( i == 0 || i == *n - 1 || j == 0 || j == *n - 1 
+  if( i == 0 || i == *n - 1 || j == 0 || j == *n - 1
       || i == *n - 2 || i == 1 || j == *n - 2 || j == 1){
-    
+
     un[idx] = 0.;
   }
   else{
@@ -159,7 +159,7 @@ __global__ static void evolve(double *un, double *uc, double *uo,
     (*t) = (*t) + *dt;
 }
 
-//sends 2 rows of length k ( = n/2 when using it in MPI grid communication) 
+//sends 2 rows of length k ( = n/2 when using it in MPI grid communication)
 //starting at point (start_row, start_col)
 void Send_Row(int start_row, int start_col, int k, int dest, double *u){
 
@@ -173,7 +173,7 @@ void Send_Row(int start_row, int start_col, int k, int dest, double *u){
   MPI_Send(msg, 2 * k, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
 }
 
-//sends 2 columns of length k ( = n/2 when using it in MPI grid communication) 
+//sends 2 columns of length k ( = n/2 when using it in MPI grid communication)
 //starting at point (start_row, start_col)
 void Send_Col(int start_row, int start_col, int k, int dest, double *u){
 
@@ -186,7 +186,7 @@ void Send_Col(int start_row, int start_col, int k, int dest, double *u){
   MPI_Send(msg, 2 * k, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
 }
 
-//receives 2 rows of length k ( = n/2 when using it in MPI grid communication) 
+//receives 2 rows of length k ( = n/2 when using it in MPI grid communication)
 //starting at point (start_row, start_col)
 void Recv_Row(int start_row, int start_col, int k, int source, double *u){
 
@@ -200,7 +200,7 @@ void Recv_Row(int start_row, int start_col, int k, int source, double *u){
 }
 
 
-//receives 2 columns of length k ( = n/2 when using it in MPI grid communication) 
+//receives 2 columns of length k ( = n/2 when using it in MPI grid communication)
 //starting at point (start_row, start_col)
 void Recv_Col(int start_row, int start_col, int k, int source, double *u)
 {
@@ -225,7 +225,7 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n,
   double t=0.0;
   double dt = h / 2.0;
   //compute the number of blocks for every GPU for a MPI node
-  int blocks = (int)pow(n / nthreads, 2) / 4; 
+  int blocks = (int)pow(n / nthreads, 2) / 4;
   //compute the number of threads per block for every GPU for a MPI node
   int threads = nthreads * nthreads;
 
@@ -317,8 +317,8 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n,
     if(!tpdt(&t,dt,end_time)){
       break;
     }
-    
-    //MPI communication between nodes for 
+
+    //MPI communication between nodes for
     //the exchange of the extra rows and columns and diagonal points
     if (rank == 0){
       //node 0 sends and receives rows and columns from 1 and 2
@@ -361,6 +361,7 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n,
       MPI_Send(u+(r_min+2)*n+c_min+2, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);
+    CUDA_CALL(cudaMemcpy( uc_d, u, sizeof(double) * n * n, cudaMemcpyHostToDevice ));
   }
 
 
@@ -368,7 +369,7 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n,
 	CUDA_CALL(cudaEventRecord(kstop, 0));
 	CUDA_CALL(cudaEventSynchronize(kstop));
 	CUDA_CALL(cudaEventElapsedTime(&ktime, kstart, kstop));
-  
+
   if(rank==0){
 	 printf("GPU computation: %f msec\n", ktime);
   }

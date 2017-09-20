@@ -1,0 +1,5 @@
+./lake 128 5 0.75 8
+Running ./lake with (128 x 128) grid, until 0.750000, with 8 threads
+CPU took 0.230665 seconds
+GPU computation: 0.003840 msec
+GPU took 0.982588 seconds

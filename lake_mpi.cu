@@ -36,7 +36,7 @@ void init_pebbles(double *p, int pn, int n);
 
 void run_cpu(double *u, double *u0, double *u1, double *pebbles, int n, double h, double end_time);
 
-extern void run_gpu(double *u, double *u0, double *u1, double *pebbles, 
+extern void run_gpu(double *u, double *u0, double *u1, double *pebbles,
                     int n, double h, double end_time, int nthreads, int rank);
 
 int main(int argc, char *argv[]){
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
   //initializing MPI here
   MPI_Init(NULL, NULL);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  
+
   //only allow 4 processsors
   if(size != 4){
     exit(1);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]){
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   if (rank == 0){
-    printf("Running %s with (%d x %d) grid, until %f, with %d threads\n", argv[0], npoints, npoints, 
+    printf("Running %s with (%d x %d) grid, until %f, with %d threads\n", argv[0], npoints, npoints,
                                                                           end_time, nthreads);
   }
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   // Broadcast pebble information to all other processes
   MPI_Bcast(pebs, narea, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
 
   // Wait for processor to complete cpu calculation
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   gettimeofday(&gpu_start, NULL);
 
   //run GPU code to compute the ripples in the grid
@@ -126,9 +126,9 @@ int main(int argc, char *argv[]){
   gettimeofday(&gpu_end, NULL);
   elapsed_gpu = ((gpu_end.tv_sec + gpu_end.tv_usec * 1e-6)-(
                   gpu_start.tv_sec + gpu_start.tv_usec * 1e-6));
-  
+
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   //root processors prints out GPU timing
   if(rank == 0){
     printf("GPU took %f seconds\n", elapsed_gpu);
@@ -147,13 +147,13 @@ int main(int argc, char *argv[]){
   // }
   // if(rank == 2){
   //   sprintf(filename,"lake_f_%d.dat", 1);
-  // }    
+  // }
   // if(rank == 3){
   //   sprintf(filename,"lake_f_%d.dat", 0);
-  // } 
+  // }
 
   print_heatmap_custom(filename, u_gpu, npoints, h);
-  
+
   // print_heatmap(filename, u_gpu, npoints, h);
 
   //free resources
@@ -246,7 +246,7 @@ void init(double *u, double *pebbles, int n){
 
 //updates the grid state from time t to time t+dt
 void evolve(double *un, double *uc, double *uo, double *pebbles, int n, double h, double dt, double t){
-  
+
   int i, j, idx;
 
   for( i = 0; i < n; i++){
@@ -254,9 +254,9 @@ void evolve(double *un, double *uc, double *uo, double *pebbles, int n, double h
 
       idx = j + i * n;
       //values at lake edge points are set to zero
-      if( i == 0 || i == n - 1 || j == 0 || j == n - 1 
+      if( i == 0 || i == n - 1 || j == 0 || j == n - 1
           || i == n - 2 || i == 1 || j == n - 2 || j == 1){
-        
+
         un[idx] = 0.;
       }
       else{
@@ -284,7 +284,7 @@ void evolve(double *un, double *uc, double *uo, double *pebbles, int n, double h
 
 //print grid values to a file
 void print_heatmap(const char *filename, double *u, int n, double h){
-  
+
   int i, j, idx;
 
   FILE *fp = fopen(filename, "w");
@@ -293,7 +293,7 @@ void print_heatmap(const char *filename, double *u, int n, double h){
     for( j = 0; j < n; j++ ){
 
       idx = j + i * n;
-      
+
       fprintf(fp, "%f %f %f\n", i*h, j*h, u[idx]);
     }
   }
@@ -303,7 +303,7 @@ void print_heatmap(const char *filename, double *u, int n, double h){
 
 //print grid values to a file
 void print_heatmap_custom(const char *filename, double *u, int n, double h){
-  
+
   int i, j, idx;
 
   FILE *fp = fopen(filename, "w");
