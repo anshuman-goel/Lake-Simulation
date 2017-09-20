@@ -2,19 +2,13 @@
 * FILE: lake.cu
 * DESCRIPTION:
 *
-* Users will supply the functions
-* i.) fn(x) - the polynomial function to be analyized
-* ii.) dfn(x) - the true derivative of the function
-* iii.) degreefn() - the degree of the polynomial
-*
-* The function fn(x) should be a polynomial.
 *
 * Group Info:
 * agoel5 Anshuman Goel
 * kgondha Kaustubh Gondhalekar
 * ndas Neha Das
 *
-* LAST REVISED: 9/13/2017
+* LAST REVISED: 9/19/2017
 ******************************************************************************/
 
 #include <stdlib.h>
@@ -77,14 +71,17 @@ int main(int argc, char *argv[])
 
   h = (XMAX - XMIN)/npoints;
 
+  //construct pebble locations at root processor for the grid
   init_pebbles(pebs, npebs, npoints);
+  //Initialize current two timestamps
   init(u_i0, pebs, npoints);
   init(u_i1, pebs, npoints);
 
-
+  //print the initial state of the grid (using CPU)
   print_heatmap("lake_i.dat", u_i0, npoints, h);
 
   gettimeofday(&cpu_start, NULL);
+  //run CPU code to compute the ripples in the grid
   run_cpu(u_cpu, u_i0, u_i1, pebs, npoints, h, end_time);
   gettimeofday(&cpu_end, NULL);
 
@@ -93,15 +90,17 @@ int main(int argc, char *argv[])
   printf("CPU took %f seconds\n", elapsed_cpu);
 
   gettimeofday(&gpu_start, NULL);
+  //run GPU code to compute the ripples in the grid
   run_gpu(u_gpu, u_i0, u_i1, pebs, npoints, h, end_time, nthreads);
   gettimeofday(&gpu_end, NULL);
   elapsed_gpu = ((gpu_end.tv_sec + gpu_end.tv_usec * 1e-6)-(
                   gpu_start.tv_sec + gpu_start.tv_usec * 1e-6));
   printf("GPU took %f seconds\n", elapsed_gpu);
 
-
+  //print final state of the lake grid after the timesteps
   print_heatmap("lake_f.dat", u_gpu, npoints, h);
 
+  //free resources
   free(u_i0);
   free(u_i1);
   free(pebs);

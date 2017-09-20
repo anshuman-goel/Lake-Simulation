@@ -1,20 +1,12 @@
 /******************************************************************************
-* FILE: lake.cu
-* DESCRIPTION:
-*
-* Users will supply the functions
-* i.) fn(x) - the polynomial function to be analyized
-* ii.) dfn(x) - the true derivative of the function
-* iii.) degreefn() - the degree of the polynomial
-*
-* The function fn(x) should be a polynomial.
+* FILE: lakegpu.cu
 *
 * Group Info:
 * agoel5 Anshuman Goel
 * kgondha Kaustubh Gondhalekar
 * ndas Neha Das
 *
-* LAST REVISED: 9/13/2017
+* LAST REVISED: 9/19/2017
 ******************************************************************************/
 
 #include <stdlib.h>
@@ -94,6 +86,7 @@ inline void __cudaCheckError( const char *file, const int line )
   return;
 }
 
+//updates the grid state from time t to time t+dt
 __global__ static void evolve(double *un, double *uc, double *uo, double *pebbles, int *n, double *h, double *dt, double *t, int *n_blocks, int *n_threads)
 {
   int i, j;
@@ -101,11 +94,14 @@ __global__ static void evolve(double *un, double *uc, double *uo, double *pebble
   unsigned int idx = blockDim.x * blockIdx.x + threadIdx.x;
   unsigned int gid = idx;
 
+  //assuming threads*blocks is not a power of 2, 
+  //the leftover variable stores the excess number of grid points we need to compute
   int leftover = (*n * *n) - (*n_threads * *n_blocks);
 
   i = idx / *n;
   j = idx % *n;
 
+  //values at lake edge points are set to zero
   if( i == 0 || i == *n - 1 || j == 0 || j == *n - 1 ||
       i == *n - 2 || i == 1 || j == *n - 2 || j == 1)
   {
@@ -113,8 +109,7 @@ __global__ static void evolve(double *un, double *uc, double *uo, double *pebble
   }
   else
   {
-    // printf("%d\n", gid);
-
+    //compute the 13-point stencil function for every grid point
     un[idx] = 2*uc[idx] - uo[idx] + VSQR *(*dt * *dt) *
     ((  uc[idx-1] // WEST
         + uc[idx+1] // EAST
@@ -133,6 +128,7 @@ __global__ static void evolve(double *un, double *uc, double *uo, double *pebble
       - 6 * uc[idx])/(*h * *h) + fn(pebbles[idx],*t));
     }
 
+    //thread 0 in the last block handles computation for the leftover grid points
     if (blockIdx.x == *n_blocks - 1 && tid == 0 && leftover > 0)
     {
       for( idx = *n * *n - 1; idx>= *n * *n - leftover; idx--)
@@ -168,8 +164,11 @@ __global__ static void evolve(double *un, double *uc, double *uo, double *pebble
       }
     }
     __syncthreads();
+
+    //save most recent two time-stamps into uo and uc
     uo[gid] = uc[gid];
     uc[gid] = un[gid];
+    //update leftover grid point's timestamps
     if (blockIdx.x == *n_blocks - 1 && tid == 0 && leftover > 0)
     {
       for( idx = *n * *n - 1; idx>= *n * *n - leftover; idx--)
@@ -178,10 +177,11 @@ __global__ static void evolve(double *un, double *uc, double *uo, double *pebble
         uc[idx] = un[idx];
       }
     }
-
+    //move the timestamp forward by dt
     (*t) = (*t) + *dt;
 }
 
+// simulates the state of the grid after the given time, using a 13-point stencil function
 void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h, double end_time, int nthreads)
 {
 	cudaEvent_t kstart, kstop;
@@ -202,6 +202,7 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
     return;
   }
 
+  //copy host variables to device
   cudaMalloc( (void **) &un_d, sizeof(double) * n * n);
   cudaMalloc( (void **) &uc_d, sizeof(double) * n * n);
   cudaMalloc( (void **) &uo_d, sizeof(double) * n * n);
@@ -213,17 +214,14 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
   cudaMalloc( (void **) &dt_d, sizeof(double) * 1 );
   cudaMalloc( (void **) &h_d, sizeof(double) * 1 );
 
-        /* Set up device timers */
+  /* Set up device timers */
 	CUDA_CALL(cudaSetDevice(0));
 	CUDA_CALL(cudaEventCreate(&kstart));
 	CUDA_CALL(cudaEventCreate(&kstop));
 
-	/* HW2: Add CUDA kernel call preperation code here */
-
 	/* Start GPU computation timer */
 	CUDA_CALL(cudaEventRecord(kstart, 0));
 
-	/* HW2: Add main lake simulation loop here */
 
   CUDA_CALL(cudaMemcpy( uc_d, u1, sizeof(double) * n * n, cudaMemcpyHostToDevice ));
   CUDA_CALL(cudaMemcpy( un_d, u, sizeof(double) * n * n, cudaMemcpyHostToDevice ));
@@ -236,11 +234,13 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
   CUDA_CALL(cudaMemcpy( dt_d, &dt, sizeof(double) * 1, cudaMemcpyHostToDevice ));
   CUDA_CALL(cudaMemcpy( t_d, &t, sizeof(double) * 1, cudaMemcpyHostToDevice ));
 
+  //compute state of the grid over the given time
   while(1)
   {
 
      evolve<<< blocks, threads >>>(un_d, uc_d, uo_d, pebs_d, n_d, h_d, dt_d, t_d, blocks_d, threads_d);
 
+     //exit from the loop if time exceeds final timestamp
      if(!tpdt(&t,dt,end_time))
         break;
 
@@ -248,14 +248,13 @@ void run_gpu(double *u, double *u0, double *u1, double *pebbles, int n, double h
   }
   CUDA_CALL(cudaMemcpy( u, un_d, sizeof(double) * n * n, cudaMemcpyDeviceToHost ));
 
-        /* Stop GPU computation timer */
+  /* Stop GPU computation timer */
 	CUDA_CALL(cudaEventRecord(kstop, 0));
 	CUDA_CALL(cudaEventSynchronize(kstop));
 	CUDA_CALL(cudaEventElapsedTime(&ktime, kstart, kstop));
 	printf("GPU computation: %f msec\n", ktime);
 
-	/* HW2: Add post CUDA kernel call processing and cleanup here */
-
+  //free resources
   cudaFree(un_d);
   cudaFree(uc_d);
   cudaFree(uo_d);
