@@ -138,23 +138,7 @@ int main(int argc, char *argv[]){
   char filename[13];
   sprintf(filename,"lake_f_%d.dat", rank);
 
-  // //workaround
-  // if(rank == 0){
-  //   sprintf(filename,"lake_f_%d.dat", 3);
-  // }
-  // if(rank == 1){
-  //   sprintf(filename,"lake_f_%d.dat", 2);
-  // }
-  // if(rank == 2){
-  //   sprintf(filename,"lake_f_%d.dat", 1);
-  // }
-  // if(rank == 3){
-  //   sprintf(filename,"lake_f_%d.dat", 0);
-  // }
-
-  print_heatmap_custom(filename, u_gpu, npoints, h);
-
-  // print_heatmap(filename, u_gpu, npoints, h);
+  print_heatmap(filename, u_gpu, npoints, h);
 
   //free resources
   free(u_i0);
@@ -301,8 +285,8 @@ void print_heatmap(const char *filename, double *u, int n, double h){
   fclose(fp);
 }
 
-//print grid values to a file
-void print_heatmap_custom(const char *filename, double *u, int n, double h){
+
+/*void print_heatmap_custom(const char *filename, double *u, int n, double h){
 
   int i, j, idx;
 
@@ -318,4 +302,6 @@ void print_heatmap_custom(const char *filename, double *u, int n, double h){
   }
 
   fclose(fp);
-}
+} */
+
+
