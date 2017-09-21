@@ -12,7 +12,24 @@ Problem 3 (Group Problem)
 Problem Objective: This program models the surface of a lake, where some pebbles have been thrown onto the surface. In the spatial domain, a centralized finite difference is used to inform a zone of how to update itself using the information from its neighbors while the time domain does something similarly, but uses the information from the previous two times. The goal is to fill in the GPU algorithm to solve the same problem as the CPU does - to calculate the 5-point and the 13-point stencil using information from its neighbours. We then extend the implementation using CUDA kernels, and also create an MPI version of our program that further decomposes the grid based on processor rank. 
 
 Solution Outline:
-1. 
+
+V3:
+The given grid is broken into 4 quadrants.
+
+MPI node with rank i handles computations for quadrant i ( for i = 0, 1, 2, 3).
+
+Every quadrant communicates 2 edge rows and 2 edge columns to adjacent quadrants and the diagonal points to diagonal quadrants. These extra points are required to compute the grid point state for edge points of the quadrants.
+
+For every iteration of the lake grid computation, these edge values are communicated among MPI nodes.
+The actual lake grid computation is done by the GPU with given blocks and threads.
+Finally, the last state of the lake grid is copied from the GPU to the host and every individual quadrant state is printed out.
+
+
+
+
+Compilation and execution:
+
+1.
 
 Commands to install/execute: Login to the ARC cluster and then login interactively to a compute node with the following commands -
 
