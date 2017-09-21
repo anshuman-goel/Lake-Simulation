@@ -1,0 +1,179 @@
+#############################################################################
+#
+# Group Info:
+# agoel5 Anshuman Goel
+# kgondha Kaustubh Gondhalekar
+# ndas Neha Das
+#
+##############################################################################
+
+Problem 3 (Group Problem)
+
+Problem Objective: This program models the surface of a lake, where some pebbles have been thrown onto the surface. In the spatial domain, a centralized finite difference is used to inform a zone of how to update itself using the information from its neighbors while the time domain does something similarly, but uses the information from the previous two times. The goal is to fill in the GPU algorithm to solve the same problem as the CPU does - to calculate the 5-point and the 13-point stencil using information from its neighbours. We then extend the implementation using CUDA kernels, and also create an MPI version of our program that further decomposes the grid based on processor rank. 
+
+Solution Outline:
+1. 
+
+Commands to install/execute: Login to the ARC cluster and then login interactively to a compute node with the following commands -
+
+Note - Before running make -f p3.Makefile for V2 or V3, comment out the other lake object in p3.Makefile (i.e comment lake-mpi for running V2 and lake for running V3)
+
+V2:
+srun -N4 -n4 -p opteron --pty /bin/bash
+make -f p3.Makefile
+./lake 128 5 1.0 8
+
+V3:
+srun -N4 -n4 -p opteron --pty /bin/bash
+make -f p3.Makefile
+prun ./lake 128 5 1.0 8
+
+
+
+V1:
+Perform experiments and compare and contrast the two versions (5-point vs 13-point). What are the tradeoffs? 
+
+For V0: 5-point stencil
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.278289 seconds
+GPU computation: 0.001632 msec
+GPU took 0.786768 seconds 
+                       
+For V1: 13-point stencil with end_time 1.0
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.306495 seconds
+GPU computation: 0.001728 msec
+GPU took 0.773797 seconds                        
+
+For V1: 13-point stencil with end_time 0.75
+Running ./lake with (128 x 128) grid, until 0.750000, with 8 threads
+CPU took 0.230665 seconds
+GPU computation: 0.003840 msec
+GPU took 0.982588 seconds
+
+13-point stencil takes slightly more CPU computation time than the 5-point stencil with the same end_time. But it does evolve faster i.e. with an end_time of 0.75 seconds, we get similar results as that of the 5-point stencil at 1.0 second. Also, with the 13-point stencil we can see more finer ripples in the heatmap as compared to the 5-point one.
+
+
+V2:
+Compare the CPU/GPU runs for varying grid sizes (16, 32, 64, 128, ..., 1024, etc.) 
+
+For different grid sizes from 16 to 1024 with 8 threads, we get the following results:
+
+Running ./lake with (16 x 16) grid, until 1.000000, with 8 threads
+CPU took 0.000693 seconds
+GPU computation: 0.723904 msec
+GPU took 0.325166 seconds
+Running ./lake with (32 x 32) grid, until 1.000000, with 8 threads
+CPU took 0.004036 seconds
+GPU computation: 1.333088 msec
+GPU took 0.307651 seconds
+Running ./lake with (64 x 64) grid, until 1.000000, with 8 threads
+CPU took 0.043270 seconds
+GPU computation: 2.800864 msec
+GPU took 0.385731 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.306883 seconds
+GPU computation: 8.094880 msec
+GPU took 0.348667 seconds
+Running ./lake with (256 x 256) grid, until 1.000000, with 8 threads
+CPU took 2.578348 seconds
+GPU computation: 34.613857 msec
+GPU took 0.401531 seconds
+Running ./lake with (512 x 512) grid, until 1.000000, with 8 threads
+CPU took 21.968226 seconds
+GPU computation: 215.587524 msec
+GPU took 0.536544 seconds
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 8 threads
+CPU took 192.154382 seconds
+GPU computation: 1494.374268 msec
+GPU took 1.810931 seconds
+
+Here, we get two times for GPU in the output - one is for just the GPU computation, second is the overall run GPU time.
+We observe that the CPU and GPU computation time increases with increase in grid size. The GPU computation takes lesser time as compared to the CPU computation and is significantly lower with large grid sizes. Till the grid size 128, the run GPU time is more than that of the run CPU time. This is because of the added overhead of cuda Malloc and initialization. For grid sizes greater than 128, we see that the overhead of allocation and initialization of variables is less than that of the computation time, which is why the GPU takes less time here.
+
+Next, for the same grid size of 128x128 and different number of threads, we get the following results:
+
+Running ./lake with (128 x 128) grid, until 1.000000, with 1 threads
+CPU took 0.312242 seconds
+GPU computation: 111.595139 msec
+GPU took 0.409433 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 2 threads
+CPU took 0.311474 seconds
+GPU computation: 31.679104 msec
+GPU took 0.353430 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 4 threads
+CPU took 0.312053 seconds
+GPU computation: 12.261024 msec
+GPU took 0.327252 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.311553 seconds
+GPU computation: 7.946624 msec
+GPU took 0.319328 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 16 threads
+CPU took 0.311648 seconds
+GPU computation: 7.554496 msec
+GPU took 0.306852 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 32 threads
+CPU took 0.312444 seconds
+GPU computation: 2.865280 msec
+GPU took 0.320189 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 64 threads
+CPU took 0.307379 seconds
+GPU computation: 2.348384 msec
+GPU took 0.310208 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 128 threads
+CPU took 0.307193 seconds
+GPU computation: 2.428544 msec
+GPU took 0.377726 seconds
+
+We observe here that the run CPU and run GPU times are more or less the same for varying thread numbers. The GPU computation time decreases as we increase the number of threads uptil 64 threads, but increases slightly at 128 threads.This can be an indication that we have reached the limit for the number of threads in a block.
+
+
+V3:
+Q. How well does your algorithm scale on the GPU? Do you find cases (grid size, thread number, etc.) where the GPU implementation does not scale well? Why?
+
+For different grid sizes from 16 to 1024 with 8 threads, we get the following results:
+
+Running ./lake with (16 x 16) grid, until 1.000000, with 8 threads
+CPU took 0.001008 seconds
+GPU computation: 38.415073 msec
+GPU took 1.389314 seconds
+Running ./lake with (32 x 32) grid, until 1.000000, with 8 threads
+CPU took 0.006653 seconds
+GPU computation: 5.793888 msec
+GPU took 1.172577 seconds
+Running ./lake with (64 x 64) grid, until 1.000000, with 8 threads
+CPU took 0.036295 seconds
+GPU computation: 11.546752 msec
+GPU took 1.178547 seconds
+Running ./lake with (128 x 128) grid, until 1.000000, with 8 threads
+CPU took 0.310709 seconds
+GPU computation: 32.802784 msec
+GPU took 1.199455 seconds
+Running ./lake with (256 x 256) grid, until 1.000000, with 8 threads
+CPU took 2.592352 seconds
+GPU computation: 171.182983 msec
+GPU took 1.334674 seconds
+Running ./lake with (512 x 512) grid, until 1.000000, with 8 threads
+CPU took 21.272439 seconds
+GPU computation: 1161.687622 msec
+GPU took 2.328066 seconds
+Running ./lake with (1024 x 1024) grid, until 1.000000, with 8 threads
+CPU took 201.075411 seconds
+GPU computation: 8103.979980 msec
+GPU took 9.267408 seconds
+
+The algorithm scales well on the GPU for bigger grid sizes as it takes fairly less amount of time than the serial execution on the CPU.  The run CPU time is lesser than the run GPU time upto a grid size of 128 x 128 because of GPU initializations, but the GPU takes much lesser time than the CPU from grid sizes 256 x 256 upwards due to massive parallelism in the GPU. For GPU computation, the time is higher in the first run for grid size 16 x 16 due to the initial setting up of the TCP connection for MPI. As we keep on increasing the grid size, the GPU computation time keeps on increasing as well.
+The algorithm also scales well on the GPU for bigger thread numbers upto a certain number of threads(=npoints) in each block after which the performance starts to deteriorate.
+
+Q. In the serial code, compare your CPU and GPU runtimes for different grid sizes. When is the GPU better, and when is it worse?
+See above discussion in the V2 section.
+
+Q. Integrating CUDA and MPI involves more sophisticated code. What problems did you encounter? How did you fix them? 
+The first problem was to figure out which rows and columns had to be exchanged between nodes for the calculation of the 13-point stencil and calculating their positions in the grid. To fix this, after splitting the grid size by 4, we calculate the row and column offset for each quadrant. Then, we use MPI_Send and MPI_Recv to exchange 2 rows, 2 columns and the diagonal points between nodes. 
+
+
+Q. In the MPI Implementation, consider ways to speed up each iteration. Do you have to wait on the GPU kernel to finish executing before you exchange boundary information? Consider how you will update the boundary grid zones - do you do it on the CPU after the kernel updates the inner zones or copy over that information to the GPU before the kernel runs? You are encouraged to experiment with different methods to find the most efficient. 
+Yes, in our implementation we first finish the GPU kernel execution and then exchange boundary information with MPI. We update the inner zones in the GPU kernel, then copy it back to the CPU after which we update the boundary zones and then copy that information back to the GPU before the kernel runs for the next iteration. 
+
+
