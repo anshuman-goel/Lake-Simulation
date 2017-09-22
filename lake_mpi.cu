@@ -286,22 +286,5 @@ void print_heatmap(const char *filename, double *u, int n, double h){
 }
 
 
-/*void print_heatmap_custom(const char *filename, double *u, int n, double h){
-
-  int i, j, idx;
-
-  FILE *fp = fopen(filename, "w");
-
-  for( i = 0; i < n; i++ ){
-    for( j = 0; j < n; j++ ){
-
-      idx = j + i * n;
-      // idx = j*n + i;
-      fprintf(fp, "%f %f %f\n", j*h, i*h, u[idx]);
-    }
-  }
-
-  fclose(fp);
-} */
 
 
